@@ -1,0 +1,3 @@
+my_env/
+.ipynb_checkpoints/
+*.pkl
