@@ -1,3 +1,5 @@
 my_env/
+logs/
 .ipynb_checkpoints/
 *.pkl
+*.h5
