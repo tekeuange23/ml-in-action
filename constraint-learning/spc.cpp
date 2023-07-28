@@ -32,6 +32,9 @@ int main()
   clause.push_back(Lit(2, false));
   solver.add_clause(clause);
 
+  /*******************************************************************************/
+  /*                                 SATISFIABLE                                 */
+  /*******************************************************************************/
   lbool ret = solver.solve();
   assert(ret == l_True);
   std::cout
@@ -40,8 +43,13 @@ int main()
       << ", " << solver.get_model()[1]
       << ", " << solver.get_model()[2]
       << std::endl;
+  assert(ret == l_True);
 
+  /*******************************************************************************/
+  /*                                UNSATISFIABLE                                */
+  /*******************************************************************************/
   // assumes 3 = FALSE, no solutions left
+  // replace "-2 0"  by  "2 0"
   vector<Lit> assumptions;
   assumptions.push_back(Lit(2, true));
   ret = solver.solve(&assumptions);
