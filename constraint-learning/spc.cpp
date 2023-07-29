@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string.h>
 #include <vector>
-// using std::vector;
 using namespace CMSat;
 using namespace std;
 
@@ -69,9 +68,7 @@ vector<vector<int>> readfile(string filename)
     while (getline(file, line))
     {
       // if (i > 0)
-      // {
       //   break;
-      // }
 
       // Store the line as a row of the 2D vector
       data.push_back(parse_cast_and_convert_to_vect(line));
@@ -94,7 +91,7 @@ vector<vector<int>> readfile(string filename)
   return data;
 }
 
-void sat()
+void sat0()
 {
   SATSolver solver;
   vector<Lit> clause;
@@ -105,6 +102,7 @@ void sat()
   // We need 3 variables. They will be: 0,1,2
   // Variable numbers are always trivially increasing
   solver.new_vars(3);
+  lbool ret;
 
   /*******************************************************************************/
   vector<vector<int>> cnf_arr{
@@ -126,38 +124,87 @@ void sat()
   /** ****************************************************************************
    *                                 SATISFIABLE                                 *
   /***************************************************************************** */
-  lbool ret = solver.solve();
-  assert(ret == l_True);
-  std::cout
-      << "Solution is: "
-      << solver.get_model()[0]
-      << ", " << solver.get_model()[1]
-      << ", " << solver.get_model()[2]
-      << std::endl;
+  {
+    ret = solver.solve();
+    assert(ret == l_True);
+    cout << "Solution is: "
+         << solver.get_model()[0]
+         << ", " << solver.get_model()[1]
+         << ", " << solver.get_model()[2]
+         << endl;
+  }
 
   /** ****************************************************************************
    *                                 ASSUMPTION                                  *
   /***************************************************************************** */
-  // --> assumes 3 = FALSE, no solutions left
-  vector<Lit> assumptions;
-  assumptions.push_back(Lit(2, true));
-  ret = solver.solve(&assumptions, true);
-  assert(ret == l_False); // UNSATISFIABLE
+  {
+    // --> assumes 3 = FALSE, no solutions left
+    vector<Lit> assumptions;
+    assumptions.push_back(Lit(2, true));
+    ret = solver.solve(&assumptions, true);
+    assert(ret == l_False); // UNSATISFIABLE
 
-  // --> without assumptions we still have a solution
-  ret = solver.solve();
-  assert(ret == l_True);
+    // --> without assumptions we still have a solution
+    ret = solver.solve();
+    assert(ret == l_True);
+  }
 
   /** ****************************************************************************
    *                                UNSATISFIABLE                                *
   /***************************************************************************** */
-  // add "-3 0"
-  // No solutions left, UNSATISFIABLE returned
-  clause.clear();
-  clause.push_back(Lit(2, true));
-  solver.add_clause(clause);
-  ret = solver.solve();
-  assert(ret == l_False);
+  {
+    // add "-3 0"
+    // No solutions left, UNSATISFIABLE returned
+    clause.clear();
+    clause.push_back(Lit(2, true));
+    solver.add_clause(clause);
+    ret = solver.solve();
+    assert(ret == l_False);
+  }
+}
+
+void sat()
+{
+  SATSolver solver;
+  vector<Lit> clause;
+  lbool ret;
+  string filename = "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf";
+  vector<vector<int>> cnf_arr = readfile(filename);
+
+  // Shape
+  int threads = 20, variables = 2318;
+  solver.set_num_threads(threads);
+  solver.new_vars(variables);
+
+  /*******************************************************************************/
+  for (int i = 0; i < cnf_arr.size(); i++)
+  {
+    clause.clear();
+    for (int j = 0; j < cnf_arr[i].size(); j++)
+    {
+      if (cnf_arr[i][j] == 0) /** TODO: fix zeros */
+        break;
+      clause.push_back(Lit(abs(cnf_arr[i][j]) - 1, cnf_arr[i][j] < 0));
+    }
+    solver.add_clause(clause);
+  }
+
+  /*******************************************************************************/
+  {
+    ret = solver.solve();
+    assert(ret == l_True);
+    cout << endl
+         << "Solution is: "
+         << endl;
+
+    cout << solver.get_model()[0];
+    for (int i = 1; i < variables; i++)
+    {
+      cout << ", " << solver.get_model()[i];
+    }
+    cout << endl;
+  }
+  /*******************************************************************************/
 }
 
 int main()
