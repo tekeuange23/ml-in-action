@@ -94,7 +94,7 @@ vector<vector<int>> readfile(string filename)
   return data;
 }
 
-int sat()
+void sat()
 {
   SATSolver solver;
   vector<Lit> clause;
@@ -106,25 +106,26 @@ int sat()
   // Variable numbers are always trivially increasing
   solver.new_vars(3);
 
-  // add "1 0"
-  clause.push_back(Lit(0, false));
-  solver.add_clause(clause);
-
-  // add "-2 0"
-  clause.clear();
-  clause.push_back(Lit(1, true));
-  solver.add_clause(clause);
-
-  // add "-1 2 3 0"
-  clause.clear();
-  clause.push_back(Lit(0, true));
-  clause.push_back(Lit(1, false));
-  clause.push_back(Lit(2, false));
-  solver.add_clause(clause);
-
   /*******************************************************************************/
-  /*                                 SATISFIABLE                                 */
-  /*******************************************************************************/
+  vector<vector<int>> cnf_arr{
+      {1},         // "1 0"
+      {-2},        // "-2 0"
+      {-1, 2, 3}}; // "-1 2 3 0"
+
+  for (int i = 0; i < cnf_arr.size(); i++)
+  {
+    clause.clear();
+    for (int j = 0; j < cnf_arr[i].size(); j++)
+    {
+      // clause.push_back(Lit(0, false));
+      clause.push_back(Lit(abs(cnf_arr[i][j]) - 1, cnf_arr[i][j] < 0));
+    }
+    solver.add_clause(clause);
+  }
+
+  /** ****************************************************************************
+   *                                 SATISFIABLE                                 *
+  /***************************************************************************** */
   lbool ret = solver.solve();
   assert(ret == l_True);
   std::cout
@@ -133,22 +134,23 @@ int sat()
       << ", " << solver.get_model()[1]
       << ", " << solver.get_model()[2]
       << std::endl;
-  assert(ret == l_True);
 
-  /*******************************************************************************/
-  /*                                UNSATISFIABLE                                */
-  /*******************************************************************************/
-  // assumes 3 = FALSE, no solutions left
-  // replace "-2 0"  by  "2 0"
+  /** ****************************************************************************
+   *                                 ASSUMPTION                                  *
+  /***************************************************************************** */
+  // --> assumes 3 = FALSE, no solutions left
   vector<Lit> assumptions;
   assumptions.push_back(Lit(2, true));
-  ret = solver.solve(&assumptions);
-  assert(ret == l_False);
+  ret = solver.solve(&assumptions, true);
+  assert(ret == l_False); // UNSATISFIABLE
 
-  // without assumptions we still have a solution
+  // --> without assumptions we still have a solution
   ret = solver.solve();
   assert(ret == l_True);
 
+  /** ****************************************************************************
+   *                                UNSATISFIABLE                                *
+  /***************************************************************************** */
   // add "-3 0"
   // No solutions left, UNSATISFIABLE returned
   clause.clear();
@@ -156,16 +158,16 @@ int sat()
   solver.add_clause(clause);
   ret = solver.solve();
   assert(ret == l_False);
-
-  return 0;
 }
 
 int main()
 {
   // parse_cast_and_convert_to_vect("-1 2 3 4 5 6 7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20 -21 -22 -23 -24 -25 -26 -27");
 
-  string filename = "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf";
-  readfile(filename);
+  // string filename = "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf";
+  // readfile(filename);
+
+  sat();
 
   return 0;
 }
