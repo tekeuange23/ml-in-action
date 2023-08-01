@@ -109,6 +109,14 @@ vector<int> get_shape(vector<vector<int>> mat)
   return vector<int>{rows, columns};
 }
 
+void print_satisfiable_sample(SATSolver solver)
+{
+  cout << "Solution is: \t" << solver.get_model()[0];
+  for (int i = 1; i < variables; i++)
+    cout << ", " << solver.get_model()[i];
+  cout << endl;
+}
+
 void satTest()
 {
   SATSolver solver;
@@ -143,13 +151,49 @@ void satTest()
    *                                 SATISFIABLE                                 *
   /***************************************************************************** */
   {
-    ret = solver.solve();
-    assert(ret == l_True);
-    cout << "Solution is: "
-         << solver.get_model()[0]
-         << ", " << solver.get_model()[1]
-         << ", " << solver.get_model()[2]
-         << endl;
+    // ret = solver.solve();
+    // assert(ret == l_True);
+    // cout << "Solution is: "
+    //      << solver.get_model()[0]
+    //      << ", " << solver.get_model()[1]
+    //      << ", " << solver.get_model()[2]
+    //      << endl;
+
+    /******************************************************************************/
+    int a = 0;
+    while (true)
+    {
+      lbool ret = solver.solve();
+      if (ret != l_True)
+      {
+        assert(ret == l_False);
+        // All solutions found.
+        exit(0);
+      }
+
+      // Use solution here. print it, for example.
+      assert(ret == l_True);
+      cout << "Solution is: "
+           << solver.get_model()[0]
+           << ", " << solver.get_model()[1]
+           << ", " << solver.get_model()[2]
+           << endl;
+
+      cout << "solver.nVars() |----->  " << solver.nVars() << endl;
+      cout << "a |----->  " << ++a << endl;
+      // Banning found solution
+      vector<Lit> ban_solution;
+      for (uint32_t var = 0; var < solver.nVars(); var++)
+      {
+        if (solver.get_model()[var] != l_Undef)
+        {
+          ban_solution.push_back(
+              Lit(var, (solver.get_model()[var] == l_True) ? true : false));
+        }
+      }
+      solver.add_clause(ban_solution);
+    }
+    /******************************************************************************/
   }
 
   /** ****************************************************************************
@@ -185,7 +229,7 @@ void sat()
 {
   SATSolver solver;
   vector<Lit> clause;
-  lbool ret;
+  // lbool ret;
   vector<vector<int>> cnf_arr = readfile(FILENAME);
 
   // Shape ++ Variable size definition
@@ -211,14 +255,49 @@ void sat()
 
   /*******************************************************************************/
   {
-    ret = solver.solve();
-    assert(ret == l_True);
-
+    // assert(ret == l_True);
     //// show satisfiable sample
     // cout << "Solution is: \t" << solver.get_model()[0];
     // for (int i = 1; i < variables; i++)
     //   cout << ", " << solver.get_model()[i];
     // cout << endl;
+
+    /******************************************************************************/
+    int a = 0;
+    while (true)
+    {
+      lbool ret = solver.solve();
+      // lbool ret = solver.solve();
+      if (ret != l_True)
+      {
+        assert(ret == l_False);
+        // All solutions found.
+        exit(0);
+      }
+
+      assert(ret == l_True);
+      //// Use solution here. print it, for example.
+      //// show satisfiable sample
+      cout << "Solution is: \t" << solver.get_model()[0];
+      for (int i = 1; i < variables; i++)
+        cout << ", " << solver.get_model()[i];
+      cout << endl;
+      // cout << "solver.nVars() |----->  " << solver.nVars() << endl;
+      cout << "# sample |----->  " << ++a << endl;
+
+      // Banning found solution
+      vector<Lit> ban_solution;
+      for (uint32_t var = 0; var < solver.nVars(); var++)
+      {
+        if (solver.get_model()[var] != l_Undef)
+        {
+          ban_solution.push_back(
+              Lit(var, (solver.get_model()[var] == l_True) ? true : false));
+        }
+      }
+      solver.add_clause(ban_solution);
+    }
+    /******************************************************************************/
   }
   /*******************************************************************************/
 }
@@ -229,7 +308,8 @@ int main()
 
   // readfile(FILENAME);
 
-  satTest();
+  sat();
+  // satTest();
 
   return 0;
 }
