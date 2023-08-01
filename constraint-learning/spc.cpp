@@ -6,8 +6,7 @@
 #include <string.h>
 #include <vector>
 
-#define VARIABLES 2318;
-#define NB_SAMPLES 20;
+#define FILENAME "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf"
 
 using namespace CMSat;
 using namespace std;
@@ -110,7 +109,7 @@ vector<int> get_shape(vector<vector<int>> mat)
   return vector<int>{rows, columns};
 }
 
-void sat0()
+void satTest()
 {
   SATSolver solver;
   vector<Lit> clause;
@@ -129,7 +128,7 @@ void sat0()
       {-2},        // "-2 0"
       {-1, 2, 3}}; // "-1 2 3 0"
 
-  for (int i = 0; i < threads; i++)
+  for (int i = 0; i < cnf_arr.size(); i++)
   {
     clause.clear();
     for (int j = 0; j < cnf_arr[i].size(); j++)
@@ -187,8 +186,7 @@ void sat()
   SATSolver solver;
   vector<Lit> clause;
   lbool ret;
-  string filename = "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf";
-  vector<vector<int>> cnf_arr = readfile(filename);
+  vector<vector<int>> cnf_arr = readfile(FILENAME);
 
   // Shape ++ Variable size definition
   vector<int> shape = get_shape(cnf_arr);
@@ -215,15 +213,11 @@ void sat()
   {
     ret = solver.solve();
     assert(ret == l_True);
-    // cout << endl
-    //      << "Solution is: "
-    //      << endl;
 
-    // cout << solver.get_model()[0];
+    //// show satisfiable sample
+    // cout << "Solution is: \t" << solver.get_model()[0];
     // for (int i = 1; i < variables; i++)
-    // {
     //   cout << ", " << solver.get_model()[i];
-    // }
     // cout << endl;
   }
   /*******************************************************************************/
@@ -233,10 +227,9 @@ int main()
 {
   // parse_cast_and_convert_to_vect("-1 2 3 4 5 6 7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20 -21 -22 -23 -24 -25 -26 -27");
 
-  // string filename = "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf";
-  // readfile(filename);
+  // readfile(FILENAME);
 
-  sat();
+  satTest();
 
   return 0;
 }
