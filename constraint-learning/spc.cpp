@@ -5,6 +5,10 @@
 #include <fstream>
 #include <string.h>
 #include <vector>
+
+#define VARIABLES 2318;
+#define NB_SAMPLES 20;
+
 using namespace CMSat;
 using namespace std;
 
@@ -52,7 +56,8 @@ vector<int> parse_cast_and_convert_to_vect(string str)
 vector<vector<int>> readfile(string filename)
 {
   // Create a 2D vector of shape (line, columns) = (20, 2318)
-  vector<vector<int>> data(0, vector<int>(2318));
+  // vector<vector<int>> data(0, vector<int>(VARIABLES));
+  vector<vector<int>> data;
 
   // Open the file
   fstream file(filename);
@@ -84,11 +89,25 @@ vector<vector<int>> readfile(string filename)
   // Close the file
   file.close();
 
-  cout << data.size() << endl;
-  for (int i = 0; i < data.size(); i++)
-    cout << data[i].size() << " | ";
+  // // show size
+  // cout << data.size() << endl;
+  // for (int i = 0; i < data.size(); i++)
+  //   cout << data[i].size() << " | ";
+  // cout << endl
+  //      << endl;
 
   return data;
+}
+
+vector<int> get_shape(vector<vector<int>> mat)
+{
+  int rows = mat.size(), columns = 0;
+
+  // maximum
+  for (int i = 0; i < mat.size(); i++)
+    columns = columns < mat[i].size() ? mat[i].size() : columns;
+
+  return vector<int>{rows, columns};
 }
 
 void sat0()
@@ -110,7 +129,7 @@ void sat0()
       {-2},        // "-2 0"
       {-1, 2, 3}}; // "-1 2 3 0"
 
-  for (int i = 0; i < cnf_arr.size(); i++)
+  for (int i = 0; i < threads; i++)
   {
     clause.clear();
     for (int j = 0; j < cnf_arr[i].size(); j++)
@@ -171,18 +190,21 @@ void sat()
   string filename = "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf";
   vector<vector<int>> cnf_arr = readfile(filename);
 
-  // Shape
-  int threads = 20, variables = 2318;
+  // Shape ++ Variable size definition
+  vector<int> shape = get_shape(cnf_arr);
+  int threads = shape[0],
+      variables = shape[1] - 1; /** TODO: fix end zeros */
   solver.set_num_threads(threads);
   solver.new_vars(variables);
+  // cout << threads << " - " << variables << endl;
 
   /*******************************************************************************/
-  for (int i = 0; i < cnf_arr.size(); i++)
+  for (int i = 0; i < threads; i++)
   {
     clause.clear();
     for (int j = 0; j < cnf_arr[i].size(); j++)
     {
-      if (cnf_arr[i][j] == 0) /** TODO: fix zeros */
+      if (cnf_arr[i][j] == 0) /** TODO: fix end zeros */
         break;
       clause.push_back(Lit(abs(cnf_arr[i][j]) - 1, cnf_arr[i][j] < 0));
     }
@@ -193,16 +215,16 @@ void sat()
   {
     ret = solver.solve();
     assert(ret == l_True);
-    cout << endl
-         << "Solution is: "
-         << endl;
+    // cout << endl
+    //      << "Solution is: "
+    //      << endl;
 
-    cout << solver.get_model()[0];
-    for (int i = 1; i < variables; i++)
-    {
-      cout << ", " << solver.get_model()[i];
-    }
-    cout << endl;
+    // cout << solver.get_model()[0];
+    // for (int i = 1; i < variables; i++)
+    // {
+    //   cout << ", " << solver.get_model()[i];
+    // }
+    // cout << endl;
   }
   /*******************************************************************************/
 }
