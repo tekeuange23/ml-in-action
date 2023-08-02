@@ -224,19 +224,17 @@ void sat()
 {
   SATSolver solver;
   vector<Lit> clause;
-  // lbool ret;
+  lbool ret;
+  int count = 0;
   vector<vector<int>> cnf_arr = readfile(FILENAME);
 
-  // Shape ++ Variable size definition
+  // Shape ++ Variables size definition
   vector<int> shape = get_shape(cnf_arr);
   int threads = shape[0],
       variables = shape[1];
+  // cout << threads << " - " << variables << endl;
   solver.set_num_threads(threads);
   solver.new_vars(variables);
-  cout << 1 << endl;
-  cout << threads << " - " << variables << endl;
-  cout << 2 << endl;
-  return;
 
   /*******************************************************************************/
   for (int i = 0; i < threads; i++)
@@ -250,60 +248,46 @@ void sat()
   }
 
   /*******************************************************************************/
+  /** show only one satisfiable sample*/
+  // assert(ret == l_True);
+  // ret = solver.solve();
+  // print_satisfiable_sample(solver);
+  // return;
+
+  while (true)
   {
-    // assert(ret == l_True);
-    //// show satisfiable sample
-    // cout << "Solution is: \t" << solver.get_model()[0];
-    // for (int i = 1; i < variables; i++)
-    //   cout << ", " << solver.get_model()[i];
-    // cout << endl;
+    ret = solver.solve();
 
-    /******************************************************************************/
-    int a = 0;
-    while (true)
+    if (ret != l_True)
     {
-      lbool ret = solver.solve();
-      // lbool ret = solver.solve();
-      if (ret != l_True)
-      {
-        assert(ret == l_False);
-        // All solutions found.
-        exit(0);
-      }
-
-      assert(ret == l_True);
-      /** show satisfiable sample */
-      // cout << "Solution is: \t" << solver.get_model()[0];
-      // for (int i = 1; i < variables; i++)
-      //   cout << ", " << solver.get_model()[i];
-      // cout << endl;
-      print_satisfiable_sample(solver);
-      cout << "solver.nVars() |----->  " << solver.nVars() << endl;
-      cout << "# sample |----->  " << ++a << endl;
-
-      /** Banning found solution */
-      vector<Lit> ban_solution;
-      for (uint32_t var = 0; var < solver.nVars(); var++)
-      {
-        if (solver.get_model()[var] != l_Undef)
-        {
-          ban_solution.push_back(
-              Lit(var, (solver.get_model()[var] == l_True) ? true : false));
-        }
-      }
-      solver.add_clause(ban_solution);
+      // All solutions found.
+      assert(ret == l_False);
+      cout << "No solution" << endl;
+      exit(0);
     }
-    /******************************************************************************/
+
+    /** ELSE */
+    assert(ret == l_True);
+    count++;
+
+    /** show satisfiable sample*/
+    // print_satisfiable_sample(solver);
+    cout << "# sample |----->  " << count << endl;
+
+    /** Banning found solution */
+    vector<Lit> ban_solution;
+
+    for (uint32_t var = 0; var < solver.nVars(); var++)
+      if (solver.get_model()[var] != l_Undef)
+        ban_solution.push_back(Lit(var, (solver.get_model()[var] == l_True) ? true : false));
+
+    solver.add_clause(ban_solution);
   }
   /*******************************************************************************/
 }
 
 int main()
 {
-  // parse_cast_and_convert_to_vect("-1 2 3 4 5 6 7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20 -21 -22 -23 -24 -25 -26 -27");
-
-  // readfile(FILENAME);
-
   sat();
   // satTest();
 
