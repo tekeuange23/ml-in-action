@@ -7,21 +7,21 @@
 #include <vector>
 
 #define FILENAME "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf"
+#define FILENAME2 "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/test/3-replicate.cnf"
 
 using namespace CMSat;
 using namespace std;
 
-vector<int> parse_cast_and_convert_to_vect(string str)
+vector<int> parse_cast_and_convert_to_vect(string const &str)
 {
-  // Create a vector to store the integers
+  // Create a vector to store integers
   vector<int> vect;
 
   // Iterate over the string and parse each integer
   for (int i = 0; i < str.length(); i++)
   {
-    // Check if the current character is a digit
+    // Check if the current character is a digit or the negative signe (-)
     if (isdigit(str[i]) || str[i] == '-')
-    // if (isdigit(str[i]))
     {
       // Create a string to store the current integer
       string num = "";
@@ -33,26 +33,30 @@ vector<int> parse_cast_and_convert_to_vect(string str)
         i = j;
       }
 
-      // Convert the string to an integer and store it in the vector
-      // int value = stoi(num);
+      // Convert the string to an integer
       stringstream ss;
       int value = 0;
       ss << num;
       ss >> value;
+
+      // exclude ends zeros
+      if (value == 0)
+        continue;
+
+      // store it in the vector
       vect.push_back(value);
     }
   }
 
-  // Print the vector
+  /** Print the vector */
   // for (int i = 0; i < vect.size(); i++)
-  // {
   //   cout << vect[i] << " ";
-  // }
+  // cout << endl;
 
   return vect;
 }
 
-vector<vector<int>> readfile(string filename)
+vector<vector<int>> readfile(string const &filename)
 {
   // Create a 2D vector of shape (line, columns) = (20, 2318)
   // vector<vector<int>> data(0, vector<int>(VARIABLES));
@@ -64,55 +68,46 @@ vector<vector<int>> readfile(string filename)
   // Iterate from the 2nd line of the file to the end
   if (file)
   {
-    string line;
-    int i = 0;
+    string line = "";
+
+    // 1st line of the file
     getline(file, line);
 
     // 2nd line of the file
     while (getline(file, line))
-    {
-      // if (i > 0)
-      //   break;
-
       // Store the line as a row of the 2D vector
       data.push_back(parse_cast_and_convert_to_vect(line));
-
-      i++;
-    }
   }
   else
-  {
     cout << "ERROR." << endl;
-  }
 
   // Close the file
   file.close();
 
-  // // show size
+  /** show size of each row*/
   // cout << data.size() << endl;
   // for (int i = 0; i < data.size(); i++)
   //   cout << data[i].size() << " | ";
-  // cout << endl
-  //      << endl;
+  // cout << endl;
 
   return data;
 }
 
-vector<int> get_shape(vector<vector<int>> mat)
+vector<int> get_shape(vector<vector<int>> const &mat)
 {
   int rows = mat.size(), columns = 0;
 
-  // maximum
+  // Maximum
   for (int i = 0; i < mat.size(); i++)
     columns = columns < mat[i].size() ? mat[i].size() : columns;
 
   return vector<int>{rows, columns};
 }
 
-void print_satisfiable_sample(SATSolver solver)
+void print_satisfiable_sample(SATSolver const &solver)
 {
   cout << "Solution is: \t" << solver.get_model()[0];
-  for (int i = 1; i < variables; i++)
+  for (int i = 1; i < solver.nVars(); i++)
     cout << ", " << solver.get_model()[i];
   cout << endl;
 }
@@ -235,21 +230,22 @@ void sat()
   // Shape ++ Variable size definition
   vector<int> shape = get_shape(cnf_arr);
   int threads = shape[0],
-      variables = shape[1] - 1; /** TODO: fix end zeros */
+      variables = shape[1];
   solver.set_num_threads(threads);
   solver.new_vars(variables);
-  // cout << threads << " - " << variables << endl;
+  cout << 1 << endl;
+  cout << threads << " - " << variables << endl;
+  cout << 2 << endl;
+  return;
 
   /*******************************************************************************/
   for (int i = 0; i < threads; i++)
   {
     clause.clear();
+
     for (int j = 0; j < cnf_arr[i].size(); j++)
-    {
-      if (cnf_arr[i][j] == 0) /** TODO: fix end zeros */
-        break;
       clause.push_back(Lit(abs(cnf_arr[i][j]) - 1, cnf_arr[i][j] < 0));
-    }
+
     solver.add_clause(clause);
   }
 
@@ -276,16 +272,16 @@ void sat()
       }
 
       assert(ret == l_True);
-      //// Use solution here. print it, for example.
-      //// show satisfiable sample
-      cout << "Solution is: \t" << solver.get_model()[0];
-      for (int i = 1; i < variables; i++)
-        cout << ", " << solver.get_model()[i];
-      cout << endl;
-      // cout << "solver.nVars() |----->  " << solver.nVars() << endl;
+      /** show satisfiable sample */
+      // cout << "Solution is: \t" << solver.get_model()[0];
+      // for (int i = 1; i < variables; i++)
+      //   cout << ", " << solver.get_model()[i];
+      // cout << endl;
+      print_satisfiable_sample(solver);
+      cout << "solver.nVars() |----->  " << solver.nVars() << endl;
       cout << "# sample |----->  " << ++a << endl;
 
-      // Banning found solution
+      /** Banning found solution */
       vector<Lit> ban_solution;
       for (uint32_t var = 0; var < solver.nVars(); var++)
       {
