@@ -59,6 +59,7 @@ vector<vector<int>> readfile(string const &filename)
   // Create a 2D vector of shape (line, columns) = (20, 2318)
   // vector<vector<int>> data(0, vector<int>(VARIABLES));
   vector<vector<int>> data;
+  vector<int> shape;
 
   // Open the file
   fstream file(filename);
@@ -70,14 +71,11 @@ vector<vector<int>> readfile(string const &filename)
 
     /** Get shape at the 1st line of the file */
     getline(file, line);
-    vector<int> shape = parse_cast_and_convert_to_vect(line);
-    int variables = shape[0],
-        clauses = shape[1];
-    cout << clauses << " * " << variables << endl;
+    shape = parse_cast_and_convert_to_vect(line);
+    cout << shape[1] << " * " << shape[0] << endl;
 
-    // 2nd line of the file
+    /** Rest of the file: Store the line as a row of the 2D vector */
     while (getline(file, line))
-      // Store the line as a row of the 2D vector
       data.push_back(parse_cast_and_convert_to_vect(line));
   }
   else
@@ -91,6 +89,9 @@ vector<vector<int>> readfile(string const &filename)
   // for (int i = 0; i < data.size(); i++)
   //   cout << data[i].size() << " | ";
   // cout << endl;
+
+  /** Add shape at the end */
+  data.push_back(shape);
 
   return data;
 }
@@ -228,16 +229,19 @@ void sat()
   vector<Lit> clause;
   lbool ret;
   int count = 0;
-  vector<vector<int>> cnf_arr = readfile(FILENAME);
+  vector<vector<int>> cnf_arr = readfile(FILENAME2);
 
-  // Shape ++ Variables size definition
-  vector<int> shape = get_shape(cnf_arr);
-  int threads = shape[0],
-      variables = shape[1];
+  /** Shape ++ Variables size definition */
+  vector<int> shape = cnf_arr[cnf_arr.size() - 1];
+  int variables = shape[0],
+      threads = shape[1];
   cout << threads << " - " << variables << endl;
+
+  /** Remove the shape at the end before processing */
+  cnf_arr.pop_back();
   solver.set_num_threads(threads);
   solver.new_vars(variables);
-  return;
+  // return;
 
   /*******************************************************************************/
   for (int i = 0; i < threads; i++)
@@ -251,12 +255,6 @@ void sat()
   }
 
   /*******************************************************************************/
-  /** show only one satisfiable sample*/
-  // assert(ret == l_True);
-  // ret = solver.solve();
-  // print_satisfiable_sample(solver);
-  // return;
-
   while (true)
   {
     ret = solver.solve();
@@ -274,7 +272,7 @@ void sat()
     count++;
 
     /** show satisfiable sample*/
-    // print_satisfiable_sample(solver);
+    print_satisfiable_sample(solver);
     cout << "# sample |----->  " << count << endl;
 
     /** Banning found solution */
@@ -286,7 +284,6 @@ void sat()
 
     solver.add_clause(ban_solution);
   }
-  /*******************************************************************************/
 }
 
 int main()
