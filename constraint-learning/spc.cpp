@@ -19,7 +19,6 @@ vector<int> parse_cast_and_convert_to_vect(string const &str)
 
   // Iterate over the string and parse each integer
   for (int i = 0; i < str.length(); i++)
-  {
     // Check if the current character is a digit or the negative signe (-)
     if (isdigit(str[i]) || str[i] == '-')
     {
@@ -46,7 +45,6 @@ vector<int> parse_cast_and_convert_to_vect(string const &str)
       // store it in the vector
       vect.push_back(value);
     }
-  }
 
   /** Print the vector */
   // for (int i = 0; i < vect.size(); i++)
@@ -70,8 +68,12 @@ vector<vector<int>> readfile(string const &filename)
   {
     string line = "";
 
-    // 1st line of the file
+    /** Get shape at the 1st line of the file */
     getline(file, line);
+    vector<int> shape = parse_cast_and_convert_to_vect(line);
+    int variables = shape[0],
+        clauses = shape[1];
+    cout << clauses << " * " << variables << endl;
 
     // 2nd line of the file
     while (getline(file, line))
@@ -232,9 +234,10 @@ void sat()
   vector<int> shape = get_shape(cnf_arr);
   int threads = shape[0],
       variables = shape[1];
-  // cout << threads << " - " << variables << endl;
+  cout << threads << " - " << variables << endl;
   solver.set_num_threads(threads);
   solver.new_vars(variables);
+  return;
 
   /*******************************************************************************/
   for (int i = 0; i < threads; i++)
