@@ -6,8 +6,11 @@
 #include <string.h>
 #include <vector>
 
-#define FILENAME "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/data/nsl-kdd.cnf"
-#define FILENAME2 "/home/ange/WORKSPACE/AI/ml-in-action/constraint-learning/test/3-replicate.cnf"
+#define FILENAME "data/nsl-kdd.cnf"
+#define FILENAME1 "test/1-replicate.cnf"
+#define FILENAME2 "test/2-replicate.cnf"
+#define FILENAME3 "test/3-replicate.cnf"
+#define FILENAME5 "test/5-replicate.cnf"
 
 using namespace CMSat;
 using namespace std;
@@ -57,14 +60,12 @@ vector<int> parse_cast_and_convert_to_vect(string const &str)
 vector<vector<int>> readfile(string const &filename)
 {
   // Create a 2D vector of shape (line, columns) = (20, 2318)
-  // vector<vector<int>> data(0, vector<int>(VARIABLES));
   vector<vector<int>> data;
   vector<int> shape;
 
   // Open the file
   fstream file(filename);
 
-  // Iterate from the 2nd line of the file to the end
   if (file)
   {
     string line = "";
@@ -72,7 +73,10 @@ vector<vector<int>> readfile(string const &filename)
     /** Get shape at the 1st line of the file */
     getline(file, line);
     shape = parse_cast_and_convert_to_vect(line);
-    cout << shape[1] << " * " << shape[0] << endl;
+
+    cout << "Processing FILE \"" << filename << "\"." << endl
+         << "Shape = (" << shape[1] << ", " << shape[0] << ")" << endl
+         << endl;
 
     /** Rest of the file: Store the line as a row of the 2D vector */
     while (getline(file, line))
@@ -96,15 +100,29 @@ vector<vector<int>> readfile(string const &filename)
   return data;
 }
 
-vector<int> get_shape(vector<vector<int>> const &mat)
+vector<int> read_shape(string const &filename)
 {
-  int rows = mat.size(), columns = 0;
+  vector<int> shape;
 
-  // Maximum
-  for (int i = 0; i < mat.size(); i++)
-    columns = columns < mat[i].size() ? mat[i].size() : columns;
+  // Open the file
+  fstream file(filename);
 
-  return vector<int>{rows, columns};
+  if (file)
+  {
+    string line = "";
+
+    /** Get shape at the 1st line of the file */
+    getline(file, line);
+    shape = parse_cast_and_convert_to_vect(line);
+    cout << shape[1] << " * " << shape[0] << endl;
+  }
+  else
+    cout << "ERROR." << endl;
+
+  // Close the file
+  file.close();
+
+  return shape;
 }
 
 void print_satisfiable_sample(SATSolver const &solver)
@@ -235,7 +253,7 @@ void sat()
   vector<int> shape = cnf_arr[cnf_arr.size() - 1];
   int variables = shape[0],
       threads = shape[1];
-  cout << threads << " - " << variables << endl;
+  // cout << threads << " - " << variables << endl;
 
   /** Remove the shape at the end before processing */
   cnf_arr.pop_back();
