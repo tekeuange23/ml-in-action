@@ -12,6 +12,9 @@
 #define FILENAME3 "test/3-replicate.cnf"
 #define FILENAME5 "test/5-replicate.cnf"
 
+#define FILENAME_MINI "test/6-minimized-cnf.cnf"
+#define FILENAME_FULL "test/6-full-cnf.cnf"
+
 using namespace CMSat;
 using namespace std;
 
@@ -247,7 +250,7 @@ void sat()
   vector<Lit> clause;
   lbool ret;
   int count = 0;
-  vector<vector<int>> cnf_arr = readfile(FILENAME2);
+  vector<vector<int>> cnf_arr = readfile(FILENAME_FULL);
 
   /** Shape ++ Variables size definition */
   vector<int> shape = cnf_arr[cnf_arr.size() - 1];
