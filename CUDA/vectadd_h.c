@@ -3,10 +3,10 @@
 // #define N 1000000000
 #define N 10
 
-
 // Initialization
-float* vectInit(float value, size_t size){
-    float *vect = (float *)malloc(size * sizeof(float));
+float *vectInit(float value, int n)
+{
+    float *vect = (float *)malloc(n * sizeof(float));
 
     if (vect == NULL)
     {
@@ -16,9 +16,9 @@ float* vectInit(float value, size_t size){
     else
     {
         int i;
-        for (i = 0; i < size; i++)
+        for (i = 0; i < n; i++)
         {
-            vect[i] = i * value; 
+            vect[i] = i * value;
         }
     }
 
@@ -34,11 +34,11 @@ void vecAdd(float *C, float *A, float *B, int n)
 }
 
 // Print the array elements
-void vectPrint(float *vect, size_t size)
+void vectPrint(float *vect, int n)
 {
     int i;
     printf("-->: ");
-    for (i = 0; i < size; i++)
+    for (i = 0; i < n; i++)
         printf("%f ", vect[i]);
     printf("\n");
 }
@@ -55,7 +55,7 @@ int main()
     /** *************************** */
     /**         Vect Addition       */
     /** *************************** */
-    vecAdd(h_C, h_A, h_B, N);    // */
+    vecAdd(h_C, h_A, h_B, N); // */
     /** *************************** */
 
     // Show
