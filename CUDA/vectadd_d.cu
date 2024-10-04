@@ -10,7 +10,7 @@ float* vectInit(float value, int n) {
 
     if (vect == NULL) {
         printf("Memory allocation failed!\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     } else {
         int i;
         for (i = 0; i < n; i++)
@@ -56,7 +56,7 @@ int main() {
     /** ******************************************** */
     /**         Part_1: Allocate Device Memory       */
     /** ******************************************** */
-    vecAdd(d_C, d_A, d_B, N);
+    // vecAdd(d_C, d_A, d_B, N);
     /** ******************************************** */
 
     /** ******************************************** */
