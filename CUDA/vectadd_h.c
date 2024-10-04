@@ -4,20 +4,15 @@
 #define N 10
 
 // Initialization
-float *vectInit(float value, int n)
-{
-    float *vect = (float *)malloc(n * sizeof(float));
+float* vectInit(float value, int n) {
+    float* vect = (float*)malloc(n * sizeof(float));
 
-    if (vect == NULL)
-    {
+    if (vect == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
-    }
-    else
-    {
+    } else {
         int i;
-        for (i = 0; i < n; i++)
-        {
+        for (i = 0; i < n; i++) {
             vect[i] = i * value;
         }
     }
@@ -26,16 +21,14 @@ float *vectInit(float value, int n)
 }
 
 // Compute vector sum C = A+B
-void vecAdd(float *C, float *A, float *B, int n)
-{
+void vecAdd(float* C, float* A, float* B, int n) {
     int i;
     for (i = 0; i < n; i++)
         C[i] = A[i] + B[i];
 }
 
 // Print the array elements
-void vectPrint(float *vect, int n)
-{
+void vectPrint(float* vect, int n) {
     int i;
     printf("-->: ");
     for (i = 0; i < n; i++)
@@ -43,11 +36,10 @@ void vectPrint(float *vect, int n)
     printf("\n");
 }
 
-int main()
-{
+int main() {
 
     // Init
-    float *h_A, *h_B, *h_C;
+    float* h_A, * h_B, * h_C;
     h_A = vectInit(1.0, N);
     h_B = vectInit(0.1, N);
     h_C = vectInit(0.0, N);
