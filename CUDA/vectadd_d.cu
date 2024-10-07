@@ -63,6 +63,7 @@ int main() {
     /**           Part_2: Kernel launch code         */
     /** ******************************************** */
     //
+    printf("hello\n");
     // vectPrint(d_A, N);
     // vectPrint(d_B, N);
     // vectPrint(d_C, N);
@@ -77,4 +78,5 @@ int main() {
     /** ******************************************** */
 
     return 0;
+    // nvcc -ccbin /usr/bin/g++-11 vectadd_d.cu -o vectadd_d && ./vectadd_d
 }
