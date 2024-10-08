@@ -18,6 +18,25 @@
 
 using namespace std;
 
+// get card Information
+void getCardInfo() {
+    int deviceCount;
+    cudaGetDeviceCount(&deviceCount);
+
+    if (deviceCount == 0) {
+        printf("No CUDA-capable devices found.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, 0);
+
+    printf("Device %d: %s\n", 0, deviceProp.name);
+    printf("Max threads Dim X: %d\n", deviceProp.maxThreadsDim[0]);
+    printf("Max threads per block: %d\n", deviceProp.maxThreadsPerBlock);
+    printf("MultiProcessor count: %d\n", deviceProp.multiProcessorCount);
+    printf("Max threads per MultiProcessor: %d\n", deviceProp.maxThreadsPerMultiProcessor);
+}
 
 // Host Vector Initialization
 float* vectInit(float value, int n) {
