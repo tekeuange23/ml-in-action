@@ -156,5 +156,5 @@ int main() {
     free(C);
 
     return 0;
-    // nvcc -ccbin /usr/bin/g++-11 vectadd_d.cu -o vectadd_d && ./vectadd_d
+    // nvcc -ccbin /usr/bin/g++-11 vectadd_d.cu -o vectadd_d_binary && ./vectadd_d_binary
 }
