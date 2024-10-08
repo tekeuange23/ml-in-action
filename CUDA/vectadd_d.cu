@@ -1,11 +1,24 @@
 #include <iostream>
 #include <chrono>
+#include <cmath>
 #include <cuda.h>
-// #define N 1000000000
-#define N 1000000
-// #define N 10
+
+/**
+ * #define N 1_000_000_000, #crashed due to insuffisiant memory.
+ * PROOF:
+ * a @float: 32_bits == 4_bytes
+ * # @total:  1_000_000_000 * 3 == 3_000_000_000 variables
+ * @conclusion: require 12_000_000_000 bytes of global memory
+ *                   ==     11_718_750 KB    of global memory
+ *                   ==      11_444.09 MB    of global memory
+ *                   ==         11.175 GB    of global memory
+*/
+#define N 10
+// #define N 100000000
 
 using namespace std;
+
+
 // Host Vector Initialization
 float* vectInit(float value, int n) {
     size_t size = n * sizeof(float);
@@ -25,11 +38,19 @@ float* vectInit(float value, int n) {
 
 // Print the array elements
 void vectPrint(float* vect, int n) {
-    // int i;
-    // printf("-->: ");
-    // for (i = 0; i < n; i++)
-    //     printf("%f ", vect[i]);
-    // printf("\n");
+    int i;
+    printf("-->: ");
+    for (i = 0; i < n; i++)
+        printf("%f ", vect[i]);
+    printf("\n");
+}
+
+// Kernel Function:  Each Thread performs one pair wise addition
+__global__
+void vectAddKernel(float* C, float* A, float* B, int n) {
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
+    if (i < n)
+        C[i] = A[i] + B[i];
 }
 
 // Compute vector sum C = A+B
@@ -65,8 +86,7 @@ void vectAdd(float* C, float* A, float* B, int n, bool cuda) {
     /** ******************************************** */
     /**           Part_2: Kernel launch code         */
     /** ******************************************** */
-    printf("hello\n");
-
+    vectAddKernel << <ceil(n / 256.0), 256 >> > (d_C, d_A, d_B, N);
 
     /** ******************************************** */
     /**            Part_3: Copy in Host Memory       */
@@ -85,6 +105,9 @@ void vectAdd(float* C, float* A, float* B, int n, bool cuda) {
 }
 
 int main() {
+    // get card info
+    // getCardInfo();
+
     // Init
     float* A, * B, * C;
     A = vectInit(1.0, N);
@@ -104,9 +127,9 @@ int main() {
     end_time = chrono::high_resolution_clock::now();
     chrono::duration<double>  device_time = end_time - start_time;
     std::cout << "Time on Device:: " << device_time.count() << " seconds." << endl;
-    std::cout << endl << "Conclusion: computation on the Device is " 
-              << host_time.count() / device_time.count() 
-              << " Faster than the Host." << endl;
+    std::cout << endl << "Conclusion: computation on the Device is "
+        << host_time.count() / device_time.count()
+        << " Faster than the Host." << endl;
 
     // Free Host Memory
     free(A);
