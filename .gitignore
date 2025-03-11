@@ -4,3 +4,4 @@ logs/
 .ipynb_checkpoints/
 *.pkl
 *.h5
+datasets/
