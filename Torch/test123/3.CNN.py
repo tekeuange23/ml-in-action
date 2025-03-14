@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
 
 # Neural Network
 class NN(nn.Module):
@@ -31,37 +30,6 @@ train_dataset = datasets.MNIST(root='datasets/', train=True, transform=transform
 test_dataset = datasets.MNIST(root='datasets/', train=False, transform=transforms.ToTensor(), download=True)
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
-
-# Visualize an image Create a 2*5 subplot figure
-fig, axs = plt.subplots(2, 5, figsize=(15, 6))
-
-# Loop through each class (0-9) and plot an image
-for i in range(10):
-    images = []
-    labels = []
-    
-    # Get all images from the current class
-    for j, (x, y) in enumerate(train_dataset):
-        if y == i:
-            images.append(x)
-            labels.append(y)
-            
-            # Add a maximum of 5 images to avoid overfilling the figure
-            if len(images) >= 5:
-                break
-                
-    # Plot the images horizontally on the same subplot
-    for j, img in enumerate(images):
-        axs[i // 5, i % 5].imshow(img.squeeze(), cmap='gray')
-        
-    # Label each subplot
-    axs[i // 5, 0].set_title(f'Class {i}')
-
-# Layout so plots do not overlap
-fig.tight_layout()
-
-plt.show()
-
 
 # Initialize Network on Device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
