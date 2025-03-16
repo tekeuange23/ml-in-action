@@ -7,10 +7,11 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 # Neural Network
-class NN(nn.Module):
-  def __init__(self, input_size, num_classes):
-    super(NN, self).__init__()
-    self.fc1 = nn.Linear(in_features=input_size, out_features=50)
+class CNN(nn.Module):
+  def __init__(self, in_channel=3, num_classes=10):
+    super(CNN, self).__init__()
+    self.conv1 = nn.Conv2d(in_channels=in_channel, out_channels=8, kernel_size=(3,3), stride=(1,1), padding=(1,1)) # same convolution
+    
     self.fc2 = nn.Linear(in_features=50, out_features=num_classes)
   
   def forward(self, x):
@@ -26,8 +27,8 @@ batch_size = 64
 num_epochs = 1
 
 # Load data
-train_dataset = datasets.MNIST(root='datasets/', train=True, transform=transforms.ToTensor(), download=True)
-test_dataset = datasets.MNIST(root='datasets/', train=False, transform=transforms.ToTensor(), download=True)
+train_dataset = datasets.CIFAR10(root='datasets/', train=True, transform=transforms.ToTensor(), download=True)
+test_dataset = datasets.CIFAR10(root='datasets/', train=False, transform=transforms.ToTensor(), download=True)
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 

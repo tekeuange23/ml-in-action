@@ -1,6 +1,7 @@
 my_env/
 logs/
 .vscode/
+.idea/
 .ipynb_checkpoints/
 *.pkl
 *.h5
