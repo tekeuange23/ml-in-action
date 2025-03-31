@@ -1,5 +1,6 @@
 import os
 from datasets import load_dataset
+import tensorflow as tf
 
 os.environ['HF_HUB_OFFLINE'] = '1'
 
@@ -11,8 +12,12 @@ data = load_dataset(
 ) 
 
 print(data)
+
 for key in data.keys():
     print(f'{key}: {len(data[key])}')
     for i in range(3):
         print(f'{data[key][i]}')
     print()
+    
+# Rescale
+rescale_layer = tf.keras.layers.Rescaling(scale=1./255)
