@@ -6,3 +6,4 @@ logs/
 *.pkl
 *.h5
 datasets/
+Torch/GAN/runs/
