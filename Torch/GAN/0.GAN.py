@@ -21,10 +21,8 @@ class Discriminator(nn.Module):
             nn.Linear(in_features=hidden_dim, out_features=1),
             # nn.Sigmoid()
         )
-
     def forward(self, x):
         return self.disc(x)
-
     def get_discriminator_block(self, input_dim, output_dim) -> Sequential:
         return nn.Sequential(
             nn.Linear(input_dim, output_dim),
@@ -32,7 +30,7 @@ class Discriminator(nn.Module):
         )
 
 class Generator(nn.Module):
-    def __init__(self, z_dim=32, img_dim=784, hidden_dim=128):
+    def __init__(self, z_dim=64, img_dim=784, hidden_dim=128):
         super().__init__()
         self.gen = nn.Sequential(
             # Hidden layers
@@ -44,10 +42,8 @@ class Generator(nn.Module):
             nn.Linear(in_features=hidden_dim * 8, out_features=img_dim),
             nn.Sigmoid() # Tanh()
         )
-
     def forward(self, noise):
         return self.gen(noise)
-
     def  get_generator_block(self, input_dim, output_dim) -> Sequential:
         return nn.Sequential(
             nn.Linear(in_features=input_dim, out_features=output_dim),
@@ -59,7 +55,7 @@ class Generator(nn.Module):
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 lr = 3e-4
 z_dim = 64
-img_dim = 28 * 28 * 1
+img_dim = 784
 batch_size = 32
 num_epochs = 50
 
@@ -91,15 +87,15 @@ for epoch in range(num_epochs):
         disc_fake = disc(fake.detach())
         loss_1_DGz = criterion(disc_fake, torch.zeros_like(disc_fake)) #log(1 - D(G(z)))
         lossD = (loss_D_real + loss_1_DGz) / 2
-        lossD.backward() # fake.detach() retain_graph=True
+        lossD.backward(retain_graph=True)
         opt_disc.step()
 
         ### Train the Generator:                                    min log(1 - D(G(z)))  <-->  saturating gradient = no training
         ###                                                                               <-->  max log(D(G(z)) to avoid that
-        disc_fake2 = disc(fake)
-        lossG = criterion(disc_fake2, torch.ones_like(disc_fake2))
+        # disc_fake2 = disc(fake)
         gen.zero_grad()
-        lossG.backward()
+        lossG = criterion(disc_fake, torch.ones_like(disc_fake))
+        lossG.backward(retain_graph=True)
         opt_gen.step()
 
         # Tensorboard
