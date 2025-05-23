@@ -92,9 +92,9 @@ for epoch in range(num_epochs):
 
         ### Train the Generator:                                    min log(1 - D(G(z)))  <-->  saturating gradient = no training
         ###                                                                               <-->  max log(D(G(z)) to avoid that
-        # disc_fake2 = disc(fake)
+        disc_fake2 = disc(fake)
         gen.zero_grad()
-        lossG = criterion(disc_fake, torch.ones_like(disc_fake))
+        lossG = criterion(disc_fake2, torch.ones_like(disc_fake2))
         lossG.backward(retain_graph=True)
         opt_gen.step()
 
