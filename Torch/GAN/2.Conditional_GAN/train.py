@@ -28,7 +28,6 @@ transforms = transforms.Compose([
 dataset = datasets.MNIST(root='../../../datasets/', train=True, transform=transforms, download=False)
 loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-
 # Models
 gen = Generator(z_dim=Z_DIM, img_channels=CHANNELS_IMG, features_g=FEATURES_GEN).to(device)
 disc = Discriminator(img_channels=CHANNELS_IMG, features_d=FEATURES_DISC).to(device)
