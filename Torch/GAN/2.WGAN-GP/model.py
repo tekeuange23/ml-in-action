@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 class Discriminator(nn.Module):
-    def __init__(self, img_channels, features_dn, num_classes):
+    def __init__(self, img_channels, features_d):
         super(Discriminator, self).__init__()
         self.disc = nn.Sequential(
             # No Normalization in the first layer. Input: N * img_channels * 64 * 64
@@ -17,7 +17,6 @@ class Discriminator(nn.Module):
             nn.Conv2d(in_channels=features_d*8, out_channels=1, kernel_size=4, stride=2, padding=0),
             nn.Sigmoid()
         )
-        self.embed = nn.Embedding(num_embeddings=num_classes, embedding_dim=features_d*features_d)
 
     def _block(self, in_channels, out_channels, kernel_size, stride, padding):
         return nn.Sequential(
@@ -26,8 +25,7 @@ class Discriminator(nn.Module):
             nn.LeakyReLU(negative_slope=0.2)
         )
 
-    def forward(self, x, labels):
-        embedding = self.embed(labels)
+    def forward(self, x):
         return self.disc(x)
 
 class Generator(nn.Module):
