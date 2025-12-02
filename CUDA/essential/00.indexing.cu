@@ -33,17 +33,19 @@ __global__ void whoami(void) {
 
 
 
-  // printf("%04d | Block(%d %d %d) = %3d | Thread(%d %d %d) = %3d\n",
-  //   id,
-  //   blockIdx.x, blockIdx.y, blockIdx.z, block_id,
-  //   threadIdx.x, threadIdx.y, threadIdx.z, thread_offset);
-  // printf("blockIdx.x: %d, blockIdx.y: %d, blockIdx.z: %d, threadIdx.x: %d, threadIdx.y: %d, threadIdx.z: %d\n", blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, threadIdx.y, threadIdx.z);
-  printf("%04d | Block(%d %d %d) = %3d | Thread(%d %d %d) = %3d  ---  blockIdx.x: %d, blockIdx.y: %d, blockIdx.z: %d, threadIdx.x: %d, threadIdx.y: %d, threadIdx.z: %d  ---  gridDim.x: %d, gridDim.y: %d, gridDim.z: %d, blockDim.x: %d, blockDim.y: %d, blockDim.z: %d\n",
+  printf("%04d | Block(%d %d %d) = %3d | Thread(%d %d %d) = %3d\n",
     id,
     blockIdx.x, blockIdx.y, blockIdx.z, block_id,
-    threadIdx.x, threadIdx.y, threadIdx.z, thread_offset,
-    blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, threadIdx.y, threadIdx.z,
-    gridDim.x, gridDim.y, gridDim.z, blockDim.x, blockDim.y, blockDim.z);
+    threadIdx.x, threadIdx.y, threadIdx.z, thread_offset);
+
+  // printf("blockIdx.x: %d, blockIdx.y: %d, blockIdx.z: %d, threadIdx.x: %d, threadIdx.y: %d, threadIdx.z: %d\n", blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, threadIdx.y, threadIdx.z);
+  
+  // printf("%04d | Block(%d %d %d) = %3d | Thread(%d %d %d) = %3d  ---  blockIdx.x: %d, blockIdx.y: %d, blockIdx.z: %d, threadIdx.x: %d, threadIdx.y: %d, threadIdx.z: %d  ---  gridDim.x: %d, gridDim.y: %d, gridDim.z: %d, blockDim.x: %d, blockDim.y: %d, blockDim.z: %d\n",
+  //   id,
+  //   blockIdx.x, blockIdx.y, blockIdx.z, block_id,
+  //   threadIdx.x, threadIdx.y, threadIdx.z, thread_offset,
+  //   blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, threadIdx.y, threadIdx.z,
+  //   gridDim.x, gridDim.y, gridDim.z, blockDim.x, blockDim.y, blockDim.z);
 }
 
 
