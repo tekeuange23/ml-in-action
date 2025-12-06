@@ -22,6 +22,11 @@ langgraph==0.6.8
 openai==2.1.0
 pypdf==6.1.1
 python-dotenv==1.1.1
+sentence-transformers==5.1.2
 tiktoken==0.11.0
+transformers==4.57.3
+torch==2.9.1
+torchvision==0.24.1
 uvicorn==0.37.0
 wget==3.2
+
