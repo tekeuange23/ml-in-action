@@ -46,9 +46,7 @@ __global__ void matmul_gpu(float *A, float *B, float *C, int m, int k, int n) {
     if (row < m && col < n) {
         float sum = 0.0f;
         for (int l = 0; l < k; l++) {
-            // sum += A[row * k + l] * B[l * k + col];
-            // sum += A[row * k + l] * B[l * n + col];
-            sum += A[row * k + l] * B[l * k + col];
+            sum += A[row * k + l] * B[l * n + col];
         }
         C[row * n + col] = sum;
     }
@@ -134,6 +132,18 @@ int main() {
     printf("CPU average time: %f microseconds\n", (cpu_avg_time * 1e6f));
     printf("GPU average time: %f microseconds\n", (gpu_avg_time * 1e6f));
     printf("Speedup: %fx\n", cpu_avg_time / gpu_avg_time);
+
+    // Verify results
+    cudaMemcpy(h_C_gpu, d_C, size_C, cudaMemcpyDeviceToHost);
+    bool correct = true;
+    for (int i = 0; i < M*N; i++) {
+        if (fabs(h_C_cpu[i] - h_C_gpu[i]) > 1e-3) { 
+            correct = false;
+            break;
+        }
+    }
+    printf("Results are %s\n", correct ? "correct" : "incorrect");
+
 
     // Free memory
     free(h_A);
