@@ -1,4 +1,4 @@
 *.env
+*.txt
 __pycache__/
 .ipynb_checkpoints/
-rag/companyPolicies\ \(1\).txt
