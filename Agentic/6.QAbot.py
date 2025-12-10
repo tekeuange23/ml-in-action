@@ -68,7 +68,11 @@ rag_application = gr.Interface(
     # allow_flagging=True,
     inputs=[
         gr.File(label="Upload PDF File", file_count="single", file_types=['.pdf'], type="filepath"),  # Drag and drop file upload
-        gr.Textbox(label="Input Query", lines=2, placeholder="Type your question here...")
+        gr.Textbox(label="Input Query", lines=2, placeholder="Type your question here..."),
+        gr.Checkbox(label="Use Custom Retriever"),
+        gr.Radio(choices=["Option 1", "Option 2", "Option 3"], label="Input Query"),
+        gr.CheckboxGroup(choices=["Input Query", "q2", "q2"], label="Input Query"),
+        gr.Dropdown(label="Input Query"),
     ],
     outputs=gr.Textbox(label="Output"),
     title=gr.Label(num_top_classes=3),
