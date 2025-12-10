@@ -17,7 +17,7 @@ warnings.filterwarnings('ignore')
 
 ## LLM
 def get_llm():
-    return ChatOllama(model="llama3.2")
+    return ChatOllama(model="gemma3:270m")
 
 ## Document loader
 def document_loader(file):
@@ -37,9 +37,8 @@ def text_splitter(data):
 
 ## Vector db
 def vector_database(chunks):
-    # embedding_model = OllamaEmbeddings(model="nomic-embed-text:v1.5", base_url="http://localhost:11434") 
-    embedding_model = OllamaEmbeddings(model="embeddinggemma:300m", base_url="http://localhost:11434") 
-    # embedding_model = OllamaEmbeddings(model="gemma3:270m", base_url="http://localhost:11434") 
+    embedding_model = OllamaEmbeddings(model="nomic-embed-text:v1.5") 
+    # embedding_model = OllamaEmbeddings(model="embeddinggemma") 
     vectordb = Chroma.from_documents(chunks, embedding_model)
     return vectordb
 
@@ -60,6 +59,7 @@ def retriever_qa(file, query):
                                     retriever=retriever_obj, 
                                     return_source_documents=True)
     response = qa.invoke(query)
+    print(response['source_documents'], end="\n\n")
     return response['result']
 
 # Create Gradio interface
